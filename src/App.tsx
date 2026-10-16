@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
+import { NavigationHistoryProvider } from './context/NavigationHistoryContext';
+import { useBackHandler } from './hooks/useBackHandler';
 import { Header } from './components/common/Header';
 import { SplashScreen } from './components/common/SplashScreen';
 import { AuthModal } from './components/auth/AuthModal';
@@ -7,6 +9,7 @@ import { ClientDashboard } from './components/client/ClientDashboard';
 import { ProfessionalDashboard } from './components/professional/ProfessionalDashboard';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { SupabaseModal } from './components/common/SupabaseModal';
+import { NativeBackToast } from './components/common/NativeBackToast';
 
 function MainAppContent() {
   const { currentUser, currentRole, isSupabaseModalOpen, setIsSupabaseModalOpen, isBookingModalOpen } = useApp();
@@ -26,6 +29,20 @@ function MainAppContent() {
     setAuthModalMode(mode);
     setIsAuthModalOpen(true);
   };
+
+  // Botão nativo de voltar do dispositivo fecha o modal de autenticação
+  useBackHandler({
+    id: 'app-auth-modal',
+    active: isAuthModalOpen,
+    onBack: () => setIsAuthModalOpen(false)
+  });
+
+  // Botão nativo de voltar do dispositivo fecha o modal de diagnóstico do Supabase
+  useBackHandler({
+    id: 'app-supabase-modal',
+    active: isSupabaseModalOpen,
+    onBack: () => setIsSupabaseModalOpen(false)
+  });
 
   return (
     <>
@@ -101,6 +118,9 @@ function MainAppContent() {
         isOpen={isSupabaseModalOpen}
         onClose={() => setIsSupabaseModalOpen(false)}
       />
+
+      {/* 5. Alerta tático de saída ao pressionar Voltar na tela inicial */}
+      <NativeBackToast />
     </>
   );
 }
@@ -108,7 +128,10 @@ function MainAppContent() {
 export default function App() {
   return (
     <AppProvider>
-      <MainAppContent />
+      <NavigationHistoryProvider>
+        <MainAppContent />
+      </NavigationHistoryProvider>
     </AppProvider>
   );
 }
+

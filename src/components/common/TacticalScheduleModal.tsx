@@ -8,6 +8,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { Logo } from './Logo';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 interface TacticalScheduleModalProps {
   isOpen: boolean;
@@ -35,6 +36,13 @@ export const TacticalScheduleModal: React.FC<TacticalScheduleModalProps> = ({
   onConfirm,
 }) => {
   const now = useMemo(() => new Date(), [isOpen]);
+
+  // Botão nativo de voltar do dispositivo fecha o modal de agendamento rápido
+  useBackHandler({
+    id: 'tactical-schedule-modal',
+    active: isOpen,
+    onBack: onClose
+  });
   
   // Year, month, day are locked to TODAY (same day)
   const todayYear = now.getFullYear();

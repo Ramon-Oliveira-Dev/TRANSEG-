@@ -43,6 +43,7 @@ import { TacticalScheduleModal } from '../common/TacticalScheduleModal';
 import { BookingStepperModal } from './booking/BookingStepperModal';
 import { playPanicAlarmSound } from '../../utils/sound';
 import { formatPhoneBR } from '../../utils/phone';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 export const ClientDashboard: React.FC = () => {
   const { 
@@ -116,6 +117,41 @@ export const ClientDashboard: React.FC = () => {
   const [lookupPhone, setLookupPhone] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [lookupFeedback, setLookupFeedback] = useState<{ type: 'error' | 'info'; message: string } | null>(null);
+
+  // Botão nativo de voltar retorna da tela de detalhes do chamado para a listagem
+  useBackHandler({
+    id: `client-request-detail-${selectedRequestId}`,
+    active: selectedRequestId !== null && !isBookingModalOpen,
+    onBack: () => setSelectedRequestId(null)
+  });
+
+  // Botão nativo de voltar fecha o modal de agendamento manual
+  useBackHandler({
+    id: 'client-manual-booking-modal',
+    active: showBookingModal && !isBookingModalOpen,
+    onBack: () => setShowBookingModal(false)
+  });
+
+  // Botão nativo de voltar fecha o modal de seleção de tipo de serviço
+  useBackHandler({
+    id: 'client-service-type-modal',
+    active: showServiceTypeModal,
+    onBack: () => setShowServiceTypeModal(false)
+  });
+
+  // Botão nativo de voltar fecha o modal de horário tático
+  useBackHandler({
+    id: 'client-schedule-modal',
+    active: showScheduleModal,
+    onBack: () => setShowScheduleModal(false)
+  });
+
+  // Botão nativo de voltar retorna para a tela inicial (catálogo de serviços)
+  useBackHandler({
+    id: `client-tab-${activeTab}`,
+    active: activeTab !== 'inicio' && !isBookingModalOpen && selectedRequestId === null && !showBookingModal && !showServiceTypeModal && !showScheduleModal,
+    onBack: () => setActiveTab('inicio')
+  });
 
   // Categorias únicas dos serviços ativos
   const serviceCategories = useMemo(() => {
@@ -847,16 +883,24 @@ export const ClientDashboard: React.FC = () => {
         {/* Card Único: Consultar Meus Chamados e Agendamento */}
         <div className="relative bg-gradient-to-b from-[#0A1428]/95 via-[#0D1B36]/90 to-[#060D1B]/95 border border-[#1E335C] rounded-[20px] p-6 sm:p-8 space-y-5 backdrop-blur-xl shadow-[0_15px_45px_rgba(0,0,0,0.65)] overflow-hidden">
           
-          {/* Topo do Card */}
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-full bg-[#FFC20E]/15 border border-[#FFC20E]/30 flex items-center justify-center text-[#FFC20E] shrink-0 shadow-inner">
-              <Search className="w-5 h-5" />
+          {/* Topo do Card com botão de retorno */}
+          <div className="flex items-center gap-3.5 pb-2 border-b border-[#16264A]/80">
+            <button
+              type="button"
+              onClick={() => setActiveTab('inicio')}
+              className="w-8 h-8 rounded-full bg-[#11203D] hover:bg-[#16264A] text-[#C3CBDA] hover:text-[#FFC20E] border border-[#1E335C] flex items-center justify-center transition-colors cursor-pointer shrink-0 shadow-sm"
+              title="Voltar ao Início"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <div className="w-10 h-10 rounded-full bg-[#FFC20E]/15 border border-[#FFC20E]/30 flex items-center justify-center text-[#FFC20E] shrink-0 shadow-inner">
+              <Search className="w-4 h-4" />
             </div>
             <div>
               <span className="eyebrow text-[#FFC20E] text-[10px] tracking-wider block font-chakra font-bold">
                 TRANSEG · ÁREA DO CLIENTE
               </span>
-              <h2 className="font-chakra font-bold text-lg sm:text-xl text-white uppercase tracking-wider">
+              <h2 className="font-chakra font-bold text-base sm:text-xl text-white uppercase tracking-wider">
                 Consultar Meus Chamados e Agendamento
               </h2>
               <p className="text-xs text-[#8E9BAE]">

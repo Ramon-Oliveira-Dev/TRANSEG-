@@ -26,6 +26,7 @@ import {
 import { Logo } from './Logo';
 import { useApp } from '../../context/AppContext';
 import { playPanicAlarmSound } from '../../utils/sound';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 interface HeaderProps {
   onOpenLoginModal?: (initialMode?: 'login' | 'admin-login') => void;
@@ -59,6 +60,20 @@ export const Header: React.FC<HeaderProps> = ({
 
   const [showFullscreenMenu, setShowFullscreenMenu] = useState(false);
   const [showQuickPanicConfirm, setShowQuickPanicConfirm] = useState(false);
+
+  // Botão nativo de voltar do dispositivo fecha o menu hambúrguer tático
+  useBackHandler({
+    id: 'header-fullscreen-menu',
+    active: showFullscreenMenu,
+    onBack: () => setShowFullscreenMenu(false)
+  });
+
+  // Botão nativo de voltar fecha o modal de confirmação do botão de pânico
+  useBackHandler({
+    id: 'header-quick-panic-modal',
+    active: showQuickPanicConfirm,
+    onBack: () => setShowQuickPanicConfirm(false)
+  });
 
   // Estados de Nome e Telefone para validação do chamado no Botão de Pânico
   const [panicClientName, setPanicClientName] = useState('');

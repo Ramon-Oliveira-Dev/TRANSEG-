@@ -36,6 +36,7 @@ import {
   FullscreenSelectTrigger,
   FullscreenSelectOption 
 } from '../common/FullscreenSelectModal';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 export const AdminDashboard: React.FC = () => {
   const { 
@@ -85,6 +86,34 @@ export const AdminDashboard: React.FC = () => {
   // Manual assignment dropdown tracking: { [requestId]: professionalId }
   const [selectedProForReq, setSelectedProForReq] = useState<Record<string, string>>({});
   const [proSelectorReqId, setProSelectorReqId] = useState<string | null>(null);
+
+  // Botão nativo de voltar fecha o modal de cadastro de novo profissional
+  useBackHandler({
+    id: 'admin-create-pro-modal',
+    active: showCreateProModal,
+    onBack: () => setShowCreateProModal(false)
+  });
+
+  // Botão nativo de voltar fecha o modal de novo serviço de catálogo
+  useBackHandler({
+    id: 'admin-create-service-modal',
+    active: showCreateServiceModal,
+    onBack: () => setShowCreateServiceModal(false)
+  });
+
+  // Botão nativo de voltar fecha o modal de alocação de agente tático
+  useBackHandler({
+    id: 'admin-pro-selector-modal',
+    active: proSelectorReqId !== null,
+    onBack: () => setProSelectorReqId(null)
+  });
+
+  // Botão nativo de voltar retorna para a aba principal de pedidos
+  useBackHandler({
+    id: `admin-tab-${activeTab}`,
+    active: activeTab !== 'pedidos' && !showCreateProModal && !showCreateServiceModal && !proSelectorReqId,
+    onBack: () => setActiveTab('pedidos')
+  });
 
   // Filter available, approved, and active professionals for assignment
   const eligibleProfessionals = professionals.filter(p => p.aprovado && p.ativo && p.disponivel);

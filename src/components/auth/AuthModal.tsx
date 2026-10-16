@@ -16,6 +16,7 @@ import {
 import { BrandBars } from '../common/BrandBars';
 import { useApp } from '../../context/AppContext';
 import { UserRole } from '../../types';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -39,6 +40,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setSuccessMessage(null);
     }
   }, [isOpen, initialMode]);
+
+  // Se o usuário entrou na tela de cadastro ou verificação, o botão voltar retorna para a tela inicial de login
+  useBackHandler({
+    id: `auth-modal-submode-${mode}`,
+    active: isOpen && mode !== initialMode,
+    onBack: () => {
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      setMode(initialMode);
+    }
+  });
 
   // Form states
   const [roleSelection, setRoleSelection] = useState<'profissional' | 'cliente'>('profissional');

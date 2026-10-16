@@ -22,6 +22,7 @@ import { useApp } from '../../context/AppContext';
 import { StatusBadge } from '../common/StatusBadge';
 import { SectionHeader } from '../common/SectionHeader';
 import { useProfessionalGeolocation } from '../../hooks/useProfessionalGeolocation';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 export const ProfessionalDashboard: React.FC = () => {
   const { 
@@ -37,6 +38,13 @@ export const ProfessionalDashboard: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'chamados' | 'historico'>('chamados');
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
+
+  // Botão nativo de voltar retorna da aba histórico para chamados
+  useBackHandler({
+    id: 'pro-dashboard-tab-historico',
+    active: activeTab === 'historico',
+    onBack: () => setActiveTab('chamados')
+  });
 
   // Find professional entity in database
   const myProfile = professionals.find(p => p.id === currentUser?.id);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Check, 
   ChevronRight, 
@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import { AdminServiceItem } from '../../../types';
 import { formatPhoneBR } from '../../../utils/phone';
+import { useBackHandler } from '../../../hooks/useBackHandler';
+import { useNavigationHistory } from '../../../context/NavigationHistoryContext';
 
 interface BookingStepperModalProps {
   isOpen: boolean;
@@ -184,6 +186,74 @@ export const BookingStepperModal: React.FC<BookingStepperModalProps> = ({
     if (initialClientName && !clientName) setClientName(initialClientName);
     if (initialClientPhone && !clientPhone) setClientPhone(initialClientPhone);
   }, [initialClientName, initialClientPhone]);
+
+  const { triggerBack, dismissGroup } = useNavigationHistory();
+
+  // Fecha o fluxo completo e limpa as entradas de histórico associadas
+  const handleCloseAll = useCallback(() => {
+    dismissGroup('booking-stepper');
+    onClose();
+  }, [dismissGroup, onClose]);
+
+  // Passo 1 / Abertura do Modal -> Botão nativo fecha o modal e volta ao Início
+  useBackHandler({
+    id: 'booking-stepper-open',
+    groupId: 'booking-stepper',
+    active: isOpen,
+    onBack: () => {
+      onClose();
+    }
+  });
+
+  // Passo 2 -> Botão nativo volta para o Passo 1
+  useBackHandler({
+    id: 'booking-stepper-step-2',
+    groupId: 'booking-stepper',
+    active: isOpen && step >= 2 && !isSuccess,
+    onBack: () => {
+      setStep(1);
+    }
+  });
+
+  // Passo 3 -> Botão nativo volta para o Passo 2
+  useBackHandler({
+    id: 'booking-stepper-step-3',
+    groupId: 'booking-stepper',
+    active: isOpen && step >= 3 && !isSuccess,
+    onBack: () => {
+      setStep(2);
+    }
+  });
+
+  // Passo 4 -> Botão nativo volta para o Passo 3
+  useBackHandler({
+    id: 'booking-stepper-step-4',
+    groupId: 'booking-stepper',
+    active: isOpen && step >= 4 && !isSuccess,
+    onBack: () => {
+      setStep(3);
+    }
+  });
+
+  // Passo 5 -> Botão nativo volta para o Passo 4
+  useBackHandler({
+    id: 'booking-stepper-step-5',
+    groupId: 'booking-stepper',
+    active: isOpen && step >= 5 && !isSuccess,
+    onBack: () => {
+      setStep(4);
+    }
+  });
+
+  // Tela de Sucesso -> Botão nativo fecha o modal e volta ao Início
+  useBackHandler({
+    id: 'booking-stepper-success',
+    groupId: 'booking-stepper',
+    active: isOpen && isSuccess,
+    onBack: () => {
+      onClose();
+    }
+  });
 
   if (!isOpen) return null;
 
@@ -555,11 +625,11 @@ export const BookingStepperModal: React.FC<BookingStepperModalProps> = ({
 
   const handlePrevStep = () => {
     setValidationError(null);
-    if (step > 1) {
-      setStep(step - 1);
-    } else {
-      onClose();
+    if (isSuccess) {
+      handleCloseAll();
+      return;
     }
+    triggerBack();
   };
 
   const canGoPrevMonth = !(
@@ -579,7 +649,7 @@ export const BookingStepperModal: React.FC<BookingStepperModalProps> = ({
       <div className="shrink-0 flex items-center justify-between pb-1 pt-0.5">
         <button
           type="button"
-          onClick={onClose}
+          onClick={handleCloseAll}
           className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-[#8E9BAE] hover:text-[#FFC20E] font-chakra font-semibold cursor-pointer transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -712,7 +782,7 @@ export const BookingStepperModal: React.FC<BookingStepperModalProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    onClose();
+                    handleCloseAll();
                     if (onViewSchedule) onViewSchedule();
                   }}
                   className="w-full btn-yellow !py-2.5 text-xs sm:text-sm font-chakra font-bold tracking-wider rounded-[10px] shadow-[0_0_15px_rgba(255,194,14,0.3)] flex items-center justify-center gap-2 cursor-pointer"

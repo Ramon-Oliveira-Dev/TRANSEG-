@@ -9,6 +9,7 @@ import {
   Shield
 } from 'lucide-react';
 import { Logo } from './Logo';
+import { useBackHandler } from '../../hooks/useBackHandler';
 
 export interface FullscreenSelectOption {
   value: string;
@@ -49,6 +50,13 @@ export const FullscreenSelectModal: React.FC<FullscreenSelectModalProps> = ({
   emptyMessage = 'Nenhuma opção encontrada.'
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Botão nativo de voltar do dispositivo fecha o modal de seleção
+  useBackHandler({
+    id: `fullscreen-select-${title}`,
+    active: isOpen,
+    onBack: onClose
+  });
 
   // Lock body scroll and handle ESC key
   useEffect(() => {

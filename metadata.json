@@ -1,0 +1,6 @@
+{
+  "name": "TRANSEG — Tecnologias de Segurança",
+  "description": "Plataforma corporativa de segurança privada sob demanda conectando clientes a profissionais qualificados.",
+  "requestFramePermissions": ["camera", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

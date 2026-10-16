@@ -1,0 +1,38 @@
+:root {
+  /* Navy (base escura) */
+  --navy: #0A1428;
+  --navy-deep: #060D1B;
+  --navy-surface: #0F1C38;
+
+  /* Amarelo (destaque / CTA) */
+  --yellow: #FFC20E;
+  --yellow-hover: #FFD75E;
+
+  /* Estado/alerta */
+  --danger: #DC2626;
+
+  /* Neutros */
+  --paper: #F3F4F6;
+  --text-dark: #3D4757;
+  --text-light: #C3CBDA;
+  --line: #DDE1E8;
+
+  /* Extensão do sistema para sucesso */
+  --success: #16A34A;
+
+  /* Tipografia oficial */
+  --display: 'Saira', sans-serif;
+  --body: 'Barlow', sans-serif;
+
+  /* Aliases do sistema */
+  --color-primary: var(--navy);
+  --color-deep: var(--navy-deep);
+  --color-surface: var(--navy-surface);
+  --color-gold: var(--yellow);
+  --color-gold-hover: var(--yellow-hover);
+  --color-sos: var(--danger);
+  --color-paper: var(--paper);
+  --color-text-dark: var(--text-dark);
+  --color-text-light: var(--text-light);
+  --color-line: var(--line);
+}
